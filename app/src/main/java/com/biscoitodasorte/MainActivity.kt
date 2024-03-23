@@ -42,6 +42,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.biscoitodasorte.components.BannerAdd
+import com.biscoitodasorte.components.PhraseContainer
 import com.biscoitodasorte.dto.Phrase
 import com.biscoitodasorte.services.Phrases
 import com.biscoitodasorte.services.loadInterstitial
@@ -85,7 +87,6 @@ fun App() {
     val modifier: Modifier = Modifier
     val phrases = Phrases()
     val localContext = LocalContext.current
-
 
     val fortuneCookieIsBroken = remember {
         mutableStateOf(true);
@@ -153,89 +154,6 @@ fun App() {
         BannerAdd(modifier = modifier)
     }
 }
-@Composable
-fun PhraseContainer(modifier: Modifier, selectedPhrase: Phrase){
-    val clipboardManager = LocalClipboardManager.current
-    val localContext = LocalContext.current
 
-    val copyPhrase:()->Unit = {
-        clipboardManager.setText(AnnotatedString(selectedPhrase.content))
-        Toast.makeText(localContext,"Frase copiada :)",Toast.LENGTH_SHORT).show();
-        showInterstitial(localContext);
-    }
 
-    val sharePhrase: ()->Unit = {
-        showInterstitial(localContext);
-        val customSharePhraseContent = "${selectedPhrase.content}\n\nBiscoito da Sorte: https://play.google.com/store/apps/details?id=com.biscoitodasorte"
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, customSharePhraseContent)
-            type = "text/plain"
-        }
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        localContext.startActivity(shareIntent)
-    }
 
-    Column(modifier = modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(20.dp)){
-        Box(modifier = modifier
-            .fillMaxWidth()
-            .background(color = Color(0xFFDBCEA0))
-            .padding(20.dp)
-            .heightIn(min = 50.dp)){
-            Column {
-                Text(text =  "\"${selectedPhrase.content}\"", color = Color.Black)
-                Box(modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center){
-                    Text(text =  selectedPhrase.author,color = Color.Black)
-                }
-            }
-        }
-
-            Row(horizontalArrangement = Arrangement.spacedBy(40.dp)) {
-                Icon(imageVector =  FontAwesomeIcons.Regular.Copy,
-                    contentDescription = "fortune cookie",
-                    modifier = modifier
-                        .height(40.dp)
-                        .width(40.dp)
-                        .clickable(onClick = copyPhrase))
-
-                Icon(imageVector =  FontAwesomeIcons.Solid.ShareAltSquare,
-                    contentDescription = "fortune cookie",
-                    modifier = modifier
-                        .height(40.dp)
-                        .width(40.dp)
-                        .clickable(onClick = sharePhrase))
-            }
-        }
-}
-
-@Composable
-fun BannerAdd(modifier: Modifier){
-    val bannerIdTeste = "ca-app-pub-3940256099942544/9214589741"
-    val officialBannerId = "ca-app-pub-4318787550457876/6715436566"
-
-    val isInEditMode = LocalInspectionMode.current
-
-    if (isInEditMode) {
-        Text(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(Color.DarkGray)
-                .padding(horizontal = 2.dp, vertical = 6.dp),
-            textAlign = TextAlign.Center,
-            color = Color.White,
-            text = "Advert Here",
-        )
-    } else {
-        AndroidView(
-            modifier = modifier.fillMaxWidth(),
-            factory = { context ->
-                AdView(context).apply {
-                    setAdSize(AdSize.BANNER)
-                    adUnitId = officialBannerId
-                    loadAd(AdRequest.Builder().build())
-                }
-            })
-    }
-}
