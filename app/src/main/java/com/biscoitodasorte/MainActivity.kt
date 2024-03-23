@@ -1,5 +1,6 @@
 package com.biscoitodasorte
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -43,6 +44,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.biscoitodasorte.dto.Phrase
 import com.biscoitodasorte.services.Phrases
+import com.biscoitodasorte.services.loadInterstitial
+import com.biscoitodasorte.services.removeInterstitial
+import com.biscoitodasorte.services.showInterstitial
 import com.biscoitodasorte.ui.theme.BiscoitoDaSorteTheme
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
@@ -55,7 +59,9 @@ import compose.icons.fontawesomeicons.solid.ShareAltSquare
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        loadInterstitial(this)
         super.onCreate(savedInstanceState)
+
         setContent {
             BiscoitoDaSorteTheme {
                 // A surface container using the 'background' color from the theme
@@ -68,12 +74,18 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+    override fun onDestroy() {
+        removeInterstitial()
+        super.onDestroy()
+    }
 }
 
 @Composable
 fun App() {
     val modifier: Modifier = Modifier
     val phrases = Phrases()
+    val localContext = LocalContext.current
+
 
     val fortuneCookieIsBroken = remember {
         mutableStateOf(true);
@@ -100,14 +112,16 @@ fun App() {
             fortuneCookieIsBroken.value = true;
 
         handleChangePhrase();
+        showInterstitial(localContext);
     }
 
     val resetFortuneCookie: ()->Unit = {
         if (fortuneCookieIsBroken.value)
             fortuneCookieIsBroken.value = false;
 
-    }
+        showInterstitial(localContext);
 
+    }
 
     Column(modifier = modifier
         .fillMaxSize()
@@ -147,9 +161,11 @@ fun PhraseContainer(modifier: Modifier, selectedPhrase: Phrase){
     val copyPhrase:()->Unit = {
         clipboardManager.setText(AnnotatedString(selectedPhrase.content))
         Toast.makeText(localContext,"Frase copiada :)",Toast.LENGTH_SHORT).show();
+        showInterstitial(localContext);
     }
 
     val sharePhrase: ()->Unit = {
+        showInterstitial(localContext);
         val customSharePhraseContent = "${selectedPhrase.content}\n\nBiscoito da Sorte: https://play.google.com/store/apps/details?id=com.biscoitodasorte"
         val sendIntent: Intent = Intent().apply {
             action = Intent.ACTION_SEND
