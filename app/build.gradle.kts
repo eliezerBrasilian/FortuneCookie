@@ -51,6 +51,7 @@ android {
 
 dependencies {
     implementation("br.com.devsrsouza.compose.icons:font-awesome:1.1.0")
+    implementation( "com.google.android.gms:play-services-ads:23.0.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

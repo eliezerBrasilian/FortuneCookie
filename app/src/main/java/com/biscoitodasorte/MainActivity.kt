@@ -33,14 +33,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.biscoitodasorte.dto.Phrase
 import com.biscoitodasorte.services.Phrases
 import com.biscoitodasorte.ui.theme.BiscoitoDaSorteTheme
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Regular
 import compose.icons.fontawesomeicons.Solid
@@ -125,9 +131,12 @@ fun App() {
         Spacer(modifier = modifier.height(20.dp))
 
         if (fortuneCookieIsBroken.value)
-        Button(onClick = resetFortuneCookie, colors = ButtonDefaults.buttonColors(Color(0xFFE9726A))) {
-            Text(text = "Fechar Biscoito")
-        }
+            Button(onClick = resetFortuneCookie, colors = ButtonDefaults.buttonColors(Color(0xFFE9726A))) {
+                Text(text = "Fechar Biscoito")
+            }
+
+        Spacer(modifier = modifier.height(20.dp))
+        BannerAdd(modifier = modifier)
     }
 }
 @Composable
@@ -172,14 +181,45 @@ fun PhraseContainer(modifier: Modifier, selectedPhrase: Phrase){
                     contentDescription = "fortune cookie",
                     modifier = modifier
                         .height(40.dp)
-                        .width(40.dp).clickable(onClick = copyPhrase))
+                        .width(40.dp)
+                        .clickable(onClick = copyPhrase))
 
                 Icon(imageVector =  FontAwesomeIcons.Solid.ShareAltSquare,
                     contentDescription = "fortune cookie",
                     modifier = modifier
                         .height(40.dp)
-                        .width(40.dp).clickable(onClick = sharePhrase))
+                        .width(40.dp)
+                        .clickable(onClick = sharePhrase))
             }
         }
+}
 
+@Composable
+fun BannerAdd(modifier: Modifier){
+    val bannerIdTeste = "ca-app-pub-3940256099942544/9214589741"
+    val officialBannerId = "ca-app-pub-4318787550457876/6715436566"
+
+    val isInEditMode = LocalInspectionMode.current
+
+    if (isInEditMode) {
+        Text(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(Color.DarkGray)
+                .padding(horizontal = 2.dp, vertical = 6.dp),
+            textAlign = TextAlign.Center,
+            color = Color.White,
+            text = "Advert Here",
+        )
+    } else {
+        AndroidView(
+            modifier = modifier.fillMaxWidth(),
+            factory = { context ->
+                AdView(context).apply {
+                    setAdSize(AdSize.BANNER)
+                    adUnitId = officialBannerId
+                    loadAd(AdRequest.Builder().build())
+                }
+            })
+    }
 }
