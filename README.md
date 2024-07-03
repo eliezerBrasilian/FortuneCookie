@@ -11,7 +11,8 @@ Um aplicativo de frases simples e amigável, para aquele momento em que você pr
 
 ## Screenshots
 
-![20240702_221718](https://github.com/eliezerBrasilian/FortuneCookie/assets/93846923/1ba314e5-c187-4fef-91e3-6aadf2871ca1)
+![20240702_221718](https://github.com/eliezerBrasilian/FortuneCookie/assets/93846923/2b992433-8ab2-4747-ba25-4080ef38e73b)
+
 
 
 
